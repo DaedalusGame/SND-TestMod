@@ -1,0 +1,101 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>UnimportantInfo</groupId>
+
+    <artifactId>TestMod</artifactId>
+    <version>0.0.1</version>
+    <name>Test Mod</name>
+    <description>TODO: Change this description</description>
+    <!-- Change the above for mod information. -->
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <SliceAndDice.version>3.2.13</SliceAndDice.version>
+        <ModTheDice.version>1.0.0</ModTheDice.version>
+
+        <!-- CHANGE THIS TO MATCH YOUR MODID FIELD IN THE MAIN TodoMod CLASS FILE -->
+        <ModID>testmod</ModID>
+        <!-- CHANGE THIS TO MATCH YOUR MODID FIELD IN THE MAIN TodoMod CLASS FILE -->
+
+        <!--CHANGE THIS TO YOUR STEAM INSTALLATION-->
+        <Steam.path>C:/Program Files (x86)/Steam/steamapps/</Steam.path>
+        <Testbed.path>C:/Repos/ModTheSpire/testbed/</Testbed.path>
+
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.tann.dice</groupId>
+            <artifactId>sliceanddice</artifactId>
+            <version>${SliceAndDice.version}</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/dice.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.bord.dice</groupId>
+            <artifactId>modthedice</artifactId>
+            <version>${ModTheDice.version}</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/ModTheDice.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>basemod</groupId>
+            <artifactId>basemod</artifactId>
+            <version>0.1</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/BaseMod.jar</systemPath>
+        </dependency>
+    </dependencies>
+
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <copy file="target/${project.artifactId}.jar"
+                                      tofile="${Testbed.path}/mods/${project.artifactId}.jar"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>${ModID}Resources/**/*.json</exclude>
+                    <exclude>ModTheDice.json</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>ModTheDice.json</include>
+                    <include>${ModID}Resources/**/*.json</include>
+                </includes>
+            </resource>
+        </resources>
+
+    </build>
+</project>

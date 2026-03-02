@@ -1,0 +1,14 @@
+{
+  "modid": "${ModID}",
+  "name": "${project.name}",
+  "author_list": [
+    "Bord"
+  ],
+  "description": "${project.description}",
+  "version": "${project.version}",
+  "snd_version": "${SliceAndDice.version}",
+  "mtd_version": "${ModTheDice.version}",
+  "dependencies": [
+	"basemod"
+  ]
+}
