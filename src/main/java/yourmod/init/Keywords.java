@@ -29,6 +29,7 @@ import com.tann.dice.gameplay.trigger.personal.Personal;
 import com.tann.dice.gameplay.trigger.personal.affectSideModular.named.Exerted;
 import com.tann.dice.gameplay.trigger.personal.linked.stateCondition.GenericStateCondition;
 import com.tann.dice.gameplay.trigger.personal.linked.stateCondition.StateConditionType;
+import com.tann.dice.gameplay.trigger.personal.merge.PetrifySide;
 import com.tann.dice.gameplay.trigger.personal.merge.Poison;
 import com.tann.dice.gameplay.trigger.personal.merge.Regen;
 import com.tann.dice.gameplay.trigger.personal.replaceSides.Decay;
@@ -58,6 +59,18 @@ public class Keywords implements basemod.keywords.IKeywordInitializer  {
         return total;
     }
 
+    private static int getPetrify(EntState state) {
+        int total = 0;
+
+        for (Personal buff : state.getActivePersonals()) {
+            if(buff instanceof PetrifySide) {
+                total += ((PetrifySide)buff).getPetrified().size();
+            }
+        }
+
+        return total;
+    }
+
     private static int countDeathSides(EntState state) {
 
         try {
@@ -74,6 +87,16 @@ public class Keywords implements basemod.keywords.IKeywordInitializer  {
 
             return total;
         } finally {
+        }
+    }
+
+    private static void setShields(EntState ent, int val) {
+        try {
+            Method block = EntState.class.getDeclaredMethod("block", int.class);
+            block.setAccessible(true);
+            block.invoke(ent, val - ent.getShields());
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
         }
     }
 
@@ -174,6 +197,25 @@ public class Keywords implements basemod.keywords.IKeywordInitializer  {
                 return 0;
             }
         });
+        ConditionalBonusTypeRegistry.registerBonus("AllyShields", new IConditionalBonusType() {
+            @Override
+            public int getBonus(Snapshot s, EntState sourceState, EntState targetState, int bonusAmount, int value, Eff eff) {
+                int total = 0;
+
+                for (EntState ent : s.getStates(sourceState.isPlayer(), false)) {
+                    total += ent.getShields();
+                }
+                return total;
+            }
+        });
+        ConditionalBonusTypeRegistry.registerBonus("Petrify", new IConditionalBonusType() {
+            @Override
+            public int getBonus(Snapshot s, EntState sourceState, EntState targetState, int bonusAmount, int value, Eff eff) {
+
+                return getPetrify(sourceState);
+            }
+        });
+
 
         //KeywordRegistry.registerBasic("antiGuilt", Colours.orange, "if this is not lethal, I die", null, KeywordAllowType.DEATHCHECK);
         //KeywordRegistry.registerBasic("good", Colours.light, "if this does not save a hero, I die", null, KeywordAllowType.DEATHCHECK);
@@ -210,13 +252,7 @@ public class Keywords implements basemod.keywords.IKeywordInitializer  {
         KeywordRegistry.onUseEffects.register("break", new IOnUseEffect() {
             @Override
             public void activate(EntState ent, int kVal, Eff eff, List<Keyword> keywords, Ent source, Targetable targetable) {
-                try {
-                    Method block = EntState.class.getDeclaredMethod("block", int.class);
-                    block.setAccessible(true);
-                    block.invoke(ent, -Math.min(ent.getShields(), kVal));
-                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                    e.printStackTrace();
-                }
+                setShields(ent, Math.max(0, ent.getShields() - kVal));
             }
         });
 
@@ -287,9 +323,11 @@ public class Keywords implements basemod.keywords.IKeywordInitializer  {
 
         KeywordRegistry.registerBasic("poisoncost", Colours.green, "costs " + KUtils.describeN() + " poison", null, KeywordAllowType.PIPS_ONLY);
         KeywordRegistry.registerBasic("hpcost", Colours.red, "costs " + KUtils.describeN() + " hp", null, KeywordAllowType.PIPS_ONLY);
+        KeywordRegistry.registerBasic("shieldcost", Colours.grey, "costs " + KUtils.describeN() + " shields", null, KeywordAllowType.PIPS_ONLY);
 
         KeywordRegistry.colorTagRegistry.register("poisoncost", cost);
         KeywordRegistry.colorTagRegistry.register("hpcost", cost);
+        KeywordRegistry.colorTagRegistry.register("shieldcost", cost);
 
         KeywordRegistry.onAfterUseEffects.register("poisoncost", new IOnAfterUseEffect() {
             @Override
@@ -346,6 +384,25 @@ public class Keywords implements basemod.keywords.IKeywordInitializer  {
                 return "Not enough hp";
             }
         });
+        KeywordRegistry.onAfterUseEffects.register("shieldcost", new IOnAfterUseEffect() {
+            @Override
+            public void activate(int kVal, Eff src, List<Keyword> keywords, Snapshot snapshot, Ent source, int sideIndex) {
+                EntState state = snapshot.getState(source);
+                setShields(state, Math.max(0, state.getShields() - kVal));
+            }
+        });
+        KeywordRegistry.keywordUsableRegistry.register("shieldcost", new EntKeywordUsable() {
+            @Override
+            public boolean isUsable(EntState state, Eff first) {
+                return state.getShields() >= KUtils.getValue(first);
+            }
+
+            @Override
+            public String getInvalidTargetReason(EntState state, Eff first, boolean allowBadTargets) {
+                return "Not enough shields";
+            }
+        });
+
 
         KeywordRegistry.registerEnumMeta("engue", new LazyKeyword("engage"), new LazyKeyword("plague"), KeywordCombineType.ConditionBonus);
         KeywordRegistry.registerEnumMeta("reborigil", new LazyKeyword("reborn"), new LazyKeyword("vigil"), KeywordCombineType.ConditionBonus);
@@ -372,6 +429,8 @@ public class Keywords implements basemod.keywords.IKeywordInitializer  {
         KeywordRegistry.registerConditionalBonus("powerful", Colours.red, KUtils.describePipBonus("max hp I have"), "",  new LazyS<>(() -> new ConditionalBonus(ConditionalBonusType.valueOf("MaxHP"))),null);
         KeywordRegistry.registerConditionalBonus("soothing", Colours.red, KUtils.describePipBonus("regen on me"), "",  new LazyS<>(() -> new ConditionalBonus(ConditionalBonusType.valueOf("Regen"))),null);
         KeywordRegistry.registerConditionalBonus("halcyon", Colours.red, KUtils.describePipBonus("regen on all characters"), "",  new LazyS<>(() -> new ConditionalBonus(ConditionalBonusType.valueOf("TotalRegen"))),null);
+        KeywordRegistry.registerConditionalBonus("rampart", Colours.grey, KUtils.describePipBonus("shield on all allies"), "",  new LazyS<>(() -> new ConditionalBonus(ConditionalBonusType.valueOf("AllyShields"))),null);
+        KeywordRegistry.registerConditionalBonus("marble", Colours.light, KUtils.describePipBonus("petrified side"), "",  new LazyS<>(() -> new ConditionalBonus(ConditionalBonusType.valueOf("Petrify"))),null);
         KeywordRegistry.registerConditionalBonus("chargelimit", Colours.blue, "pips are limited to stored mana", "",  new LazyS<>(() -> new ConditionalBonus(ConditionalBonusType.valueOf("LimitMana"))),null);
         KeywordRegistry.registerConditionalBonus("fleshlimit", Colours.red, "pips are limited to my hp", "",  new LazyS<>(() -> new ConditionalBonus(ConditionalBonusType.valueOf("LimitHP"))),null);
         KeywordRegistry.registerConditionalBonus("skilllimit", Colours.light, "pips are limited to my level", "",  new LazyS<>(() -> new ConditionalBonus(ConditionalBonusType.valueOf("LimitMyTier"))),null);

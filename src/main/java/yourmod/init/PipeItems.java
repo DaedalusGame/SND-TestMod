@@ -41,6 +41,7 @@ public class PipeItems implements IInitializeItemPipes {
         PipeItem.pipes.add(new PipeItemHasSideCondition());
         PipeItem.pipes.add(new PipeItemIndexedSides());
         PipeItem.pipes.add(new PipeItemExactPips());
+        PipeItem.pipes.add(new PipeItemTogFrom());
         //PipeItem.pipes.add(new PipeItemForge());
     }
 

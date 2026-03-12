@@ -2,6 +2,7 @@ package yourmod.pipes;
 
 import com.tann.dice.gameplay.content.ent.die.side.EnSiBi;
 import com.tann.dice.gameplay.content.ent.die.side.EntSide;
+import com.tann.dice.gameplay.content.ent.type.EntType;
 import com.tann.dice.gameplay.content.ent.type.HeroType;
 import com.tann.dice.gameplay.content.ent.type.lib.HeroTypeLib;
 import com.tann.dice.gameplay.content.ent.type.lib.HeroTypeUtils;
@@ -34,7 +35,7 @@ public class PipeItemChangeType extends PipeRegexNamed<Item> {
         }
     }
 
-    public static EntSideState getLeftmostBlankDerived(HeroType ht) {
+    public static EntSideState getLeftmostBlankDerived(EntType ht) {
         List<EntSideState> states = ht.makeEnt().getBlankState().getAllSideStates();
         return ((EntSideState)states.get(2));
     }
@@ -47,7 +48,10 @@ public class PipeItemChangeType extends PipeRegexNamed<Item> {
 
         int val = eff.getValue();
 
-        String desc = entSide.describe();
+        Eff effForDesc = entSide.getCalculatedEffect().copy();
+        if(effForDesc.getValue() != -999) effForDesc.setValue(69);
+
+        String desc = effForDesc.describe().replace("69 ", "");
         ChangeType changeType = new ChangeTypeEx(ensibi, desc, val == -999 ? 1 : val, original);
         return new ItBill(PREF + ht.getName()).prs(changeType).bItem();
     }
