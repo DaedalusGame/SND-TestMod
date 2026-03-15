@@ -1,5 +1,6 @@
 package yourmod.effect;
 
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.tann.dice.Main;
 import com.tann.dice.gameplay.content.ent.Ent;
@@ -12,13 +13,17 @@ import com.tann.dice.gameplay.fightLog.EntState;
 import com.tann.dice.gameplay.fightLog.Snapshot;
 import com.tann.dice.gameplay.trigger.Collision;
 import com.tann.dice.gameplay.trigger.personal.Personal;
+import com.tann.dice.statics.ImageUtils;
+import com.tann.dice.util.Colours;
 import com.tann.dice.util.Pixl;
 
+import javax.xml.soap.Text;
 import java.util.Iterator;
 import java.util.List;
 
 public class EffAdjacentsOnDeath extends Personal {
     public Eff eff;
+    private static TextureRegion tex;
 
     public EffAdjacentsOnDeath(Eff eff) {
         this.eff = eff;
@@ -38,7 +43,11 @@ public class EffAdjacentsOnDeath extends Personal {
 
     public Actor makePanelActorI(boolean big) {
         Actor effImage = this.eff.getBasicImage();
-        return (new Pixl()).image(this.getImage()).text("[notranslate][text]: ").actor(effImage).pix();
+        if(tex == null) {
+            tex = ImageUtils.loadExtNull("trigger/equip-stuff/adjacentDeathWhite");
+        }
+
+        return (new Pixl()).image(tex).text("[notranslate][text] : ").actor(effImage).pix();
     }
 
     public void onDeath(EntState self, Snapshot snapshot) {

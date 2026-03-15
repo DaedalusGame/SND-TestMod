@@ -1,10 +1,10 @@
 package yourmod.buffs;
 
+import basemod.util.ReflectionUtils;
 import com.tann.dice.gameplay.effect.Buff;
 import com.tann.dice.gameplay.trigger.personal.Personal;
 import com.tann.dice.gameplay.trigger.personal.affectSideModular.AffectSides;
 import com.tann.dice.gameplay.trigger.personal.affectSideModular.effect.AffectSideEffect;
-import yourmod.ReflectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;

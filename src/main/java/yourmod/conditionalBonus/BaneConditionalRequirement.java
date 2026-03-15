@@ -7,6 +7,7 @@ import com.tann.dice.gameplay.effect.eff.conditionalBonus.conditionalRequirement
 import com.tann.dice.gameplay.fightLog.EntState;
 import com.tann.dice.gameplay.fightLog.Snapshot;
 import com.tann.dice.util.Pixl;
+import yourmod.TrueNameUtils;
 
 public class BaneConditionalRequirement implements ConditionalRequirement {
     boolean isTarget;
@@ -29,7 +30,7 @@ public class BaneConditionalRequirement implements ConditionalRequirement {
         }
 
         if(ent == null) return false;
-        String name = ent.getName(true, false);
+        String name = TrueNameUtils.getTrueName(ent);
         if(name == null) return false;
 
         return name.toLowerCase().contains(this.name);

@@ -44,7 +44,7 @@ public class HasSideConditionalRequirement implements ConditionalRequirement {
 
     @Override
     public String getBasicString() {
-        return "poisoned";
+        return condition.describe();
     }
 
     @Override

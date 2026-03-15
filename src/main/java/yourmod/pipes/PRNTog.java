@@ -13,11 +13,11 @@ public class PRNTog extends PRNPart {
     }
 
     protected String describe() {
-        return this.regex().replaceAll("\\\\", "").toLowerCase();
+        return "tog*";
     }
 
     protected Color getColour() {
-        return Colours.light;
+        return Colours.grey;
     }
 }
 

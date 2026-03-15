@@ -35,6 +35,7 @@ import com.tann.dice.gameplay.trigger.personal.merge.Regen;
 import com.tann.dice.gameplay.trigger.personal.replaceSides.Decay;
 import com.tann.dice.screens.shaderFx.DeathType;
 import com.tann.dice.util.Colours;
+import yourmod.TrueNameUtils;
 import yourmod.buffs.Overburn;
 import yourmod.buffs.Serenity;
 import yourmod.conditionalBonus.*;
@@ -139,7 +140,7 @@ public class Keywords implements basemod.keywords.IKeywordInitializer  {
                 int total = 0;
 
                 for (EntState i : s.getStates((Boolean)null, false)) {
-                    if(i.getEnt().getName(true, false).toLowerCase().contains("bones")) {
+                    if(TrueNameUtils.getTrueName(i.getEnt()).toLowerCase().contains("bones")) {
                         total++;
                     }
                 }
@@ -302,7 +303,7 @@ public class Keywords implements basemod.keywords.IKeywordInitializer  {
         KeywordRegistry.onUseEffects.register("boneslayer", new IOnUseEffect() {
             @Override
             public void activate(EntState ent, int kVal, Eff eff, List<Keyword> keywords, Ent source, Targetable targetable) {
-                if(ent.getEnt().getName(true, false).toLowerCase().contains("bones")) {
+                if(TrueNameUtils.getTrueName(ent.getEnt()).toLowerCase().contains("bones")) {
                     ent.kill(DeathType.Singularity);
                 }
             }

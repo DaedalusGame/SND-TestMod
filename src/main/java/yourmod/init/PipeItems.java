@@ -1,29 +1,24 @@
 package yourmod.init;
 
 import basemod.pipes.*;
-import com.tann.dice.gameplay.content.ent.EntSize;
-import com.tann.dice.gameplay.content.ent.die.side.EnSiBi;
 import com.tann.dice.gameplay.content.gen.pipe.item.PipeItem;
 import com.tann.dice.gameplay.content.item.ItBill;
 import com.tann.dice.gameplay.content.item.Item;
-import com.tann.dice.gameplay.effect.eff.EffBill;
-import com.tann.dice.gameplay.effect.eff.EffType;
-import com.tann.dice.gameplay.effect.eff.keyword.Keyword;
 import com.tann.dice.gameplay.trigger.personal.affectSideModular.AffectSides;
-import com.tann.dice.gameplay.trigger.personal.affectSideModular.condition.HasKeyword;
-import com.tann.dice.gameplay.trigger.personal.affectSideModular.condition.SpecificSidesCondition;
 import com.tann.dice.gameplay.trigger.personal.affectSideModular.condition.SpecificSidesType;
-import com.tann.dice.gameplay.trigger.personal.affectSideModular.condition.TypeCondition;
-import com.tann.dice.gameplay.trigger.personal.affectSideModular.effect.ReplaceWith;
+import com.tann.dice.gameplay.trigger.personal.affectSideModular.effect.ChangeToMyPosition;
 import yourmod.effect.LostAtEndOfFight;
 import yourmod.effect.SetToLowest;
 import yourmod.effect.TogBuffTimeEx;
 import yourmod.effect.TogSideBuff;
-import yourmod.pipes.*;
+import yourmod.pipes.item.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PipeItems implements IInitializeItemPipes {
+    public static List<String> togs = new ArrayList<>();
+
     @Override
     public void initialize() {
         PipeItem.pipes.add(new PipeItemCamomile());
@@ -38,11 +33,16 @@ public class PipeItems implements IInitializeItemPipes {
         PipeItem.pipes.add(new PipeItemOnOtherDeath());
         PipeItem.pipes.add(new PipeItemAfterUse());
         PipeItem.pipes.add(new PipeItemAdjacentDeath());
-        PipeItem.pipes.add(new PipeItemHasSideCondition());
+        //PipeItem.pipes.add(new PipeItemHasSideCondition());
         PipeItem.pipes.add(new PipeItemIndexedSides());
         PipeItem.pipes.add(new PipeItemExactPips());
         PipeItem.pipes.add(new PipeItemTogFrom());
         PipeItem.pipes.add(new PipeItemColorRestriction());
+        PipeItem.pipes.add(new PipeItemNon());
+        PipeItem.pipes.add(new PipeItemScrappy());
+        PipeItem.pipes.add(new PipeItemCopyItemTiers());
+        PipeItem.pipes.add(new PipeItemAddKeywordColor());
+        PipeItem.pipes.add(new PipeItemRemoveKeywordColor());
         //PipeItem.pipes.add(new PipeItemForge());
     }
 
@@ -52,5 +52,19 @@ public class PipeItems implements IInitializeItemPipes {
         list.add((new ItBill("togtime2")).prs(new AffectSides(new TogBuffTimeEx())).bItem());
         list.add((new ItBill("lowball")).prs(new AffectSides(new SetToLowest())).bItem());
         list.add((new ItBill("scrap")).prs(new LostAtEndOfFight("scrap")).bItem());
+
+        list.add((new ItBill("left spear")).prs(new AffectSides(new ChangeToMyPosition(SpecificSidesType.Left))).bItem());
+        list.add((new ItBill("top spear")).prs(new AffectSides(new ChangeToMyPosition(SpecificSidesType.Top))).bItem());
+        list.add((new ItBill("bottom spear")).prs(new AffectSides(new ChangeToMyPosition(SpecificSidesType.Bot))).bItem());
+        list.add((new ItBill("right spear")).prs(new AffectSides(new ChangeToMyPosition(SpecificSidesType.Right))).bItem());
+        list.add((new ItBill("mid spear")).prs(new AffectSides(new ChangeToMyPosition(SpecificSidesType.Middle))).bItem());
+        list.add((new ItBill("rightmost spear")).prs(new AffectSides(new ChangeToMyPosition(SpecificSidesType.RightMost))).bItem());
+
+        for (Item item : list) {
+            String name = item.getName(false);
+            if(name.startsWith("tog")) {
+                togs.add(name);
+            }
+        }
     }
 }

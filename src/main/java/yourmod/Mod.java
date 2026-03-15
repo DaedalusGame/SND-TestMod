@@ -2,21 +2,54 @@ package yourmod;
 
 import basemod.BaseMod;
 import basemod.LazyS;
+import basemod.ledger.ILedgerPageType;
+import basemod.ledger.LedgerPageTypeRegistry;
 import basemod.sides.SpecificSidesTypeRegistry;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.bord.dice.modthedice.Loader;
 import com.bord.dice.modthedice.lib.SpireInitializer;
+import com.tann.dice.screens.dungeon.panels.book.page.ledgerPage.LedgerPage;
 import com.tann.dice.statics.Images;
+import com.tann.dice.util.Colours;
+import com.tann.dice.util.Pixl;
 import yourmod.init.Keywords;
 import yourmod.init.PipeItems;
 import yourmod.init.PipeMods;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 @SpireInitializer
 public class Mod {
+
+    public static TextureRegion loadTex(String path) {
+        try {
+            Method loadMethod = Images.class.getDeclaredMethod("load", String.class);
+            loadMethod.setAccessible(true);
+            return (TextureRegion)loadMethod.invoke(null, path);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static void initialize() {
         BaseMod.register(new Keywords());
         BaseMod.register(new PipeItems());
         BaseMod.register(new PipeMods());
+
+        LedgerPageTypeRegistry.registerLedgerPage("Meta", Colours.BLURPLE, new ILedgerPageType() {
+            @Override
+            public String getName(LedgerPage.LedgerPageType __instance) {
+                return __instance.name();
+            }
+
+            @Override
+            public Actor getActor(int contentWidth) {
+                return (new Pixl(0)).forceWidth(contentWidth).text("Test").row(5).pix();
+            }
+        });
 
         /*SpecificSidesTypeRegistry.registerSpecificSidesType(
                 "Left3",
@@ -32,21 +65,22 @@ public class Mod {
                 },
                 "all sides",
                 "all");*/
+
         SpecificSidesTypeRegistry.registerSpecificSidesType(
                 "Left3",
                 new int[]{2, 4, 3},
-                new LazyS<>(() -> Images.replaceAll),
+                new LazyS<>(() -> loadTex("trigger/equip-stuff/itemDiagram/left3")),
                 new Vector2[]{
-                        new Vector2(0.0F, 15.0F),
-                        new Vector2(15.0F, 15.0F),
-                        new Vector2(30.0F, 15.0F),
+                        new Vector2(0.0F, 5.0F),
+                        new Vector2(15.0F, 5.0F),
+                        new Vector2(30.0F, 5.0F),
                 },
                 "the three left sides",
                 "left3");
         SpecificSidesTypeRegistry.registerSpecificSidesType(
                 "Left4",
                 new int[]{2, 4, 0, 1},
-                new LazyS<>(() -> Images.replaceAll),
+                new LazyS<>(() -> loadTex("trigger/equip-stuff/itemDiagram/left4")),
                 new Vector2[]{
                         new Vector2(0.0F, 15.0F),
                         new Vector2(15.0F, 15.0F),
@@ -58,7 +92,7 @@ public class Mod {
         SpecificSidesTypeRegistry.registerSpecificSidesType(
                 "Left5",
                 new int[]{2, 4, 0, 1, 3},
-                new LazyS<>(() -> Images.replaceAll),
+                new LazyS<>(() -> loadTex("trigger/equip-stuff/itemDiagram/left5")),
                 new Vector2[]{
                         new Vector2(0.0F, 15.0F),
                         new Vector2(15.0F, 15.0F),
@@ -72,20 +106,20 @@ public class Mod {
         SpecificSidesTypeRegistry.registerSpecificSidesType(
                 "Bottom2",
                 new int[]{4, 1},
-                new LazyS<>(() -> Images.replaceAll),
+                new LazyS<>(() -> loadTex("trigger/equip-stuff/itemDiagram/bot2")),
                 new Vector2[]{
-                        new Vector2(15.0F, 15.0F),
-                        new Vector2(15.0F, 0.0F),
+                        new Vector2(5.0F, 15.0F),
+                        new Vector2(5.0F, 0.0F),
                 },
                 "the two bottom sides",
                 "bot2");
         SpecificSidesTypeRegistry.registerSpecificSidesType(
                 "Top2",
                 new int[]{4, 0},
-                new LazyS<>(() -> Images.replaceAll),
+                new LazyS<>(() -> loadTex("trigger/equip-stuff/itemDiagram/top2")),
                 new Vector2[]{
-                        new Vector2(15.0F, 15.0F),
-                        new Vector2(15.0F, 30.0F),
+                        new Vector2(5.0F, 5.0F),
+                        new Vector2(5.0F, 20.0F),
                 },
                 "the two top sides",
                 "top2");
@@ -93,7 +127,7 @@ public class Mod {
         SpecificSidesTypeRegistry.registerSpecificSidesType(
                 "Ring",
                 new int[]{2, 0, 1, 3},
-                new LazyS<>(() -> Images.replaceAll),
+                new LazyS<>(() -> loadTex("trigger/equip-stuff/itemDiagram/left5")),
                 new Vector2[]{
                         new Vector2(0.0F, 15.0F),
                         new Vector2(15.0F, 30.0F),

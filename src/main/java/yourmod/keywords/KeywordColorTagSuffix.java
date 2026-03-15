@@ -18,7 +18,7 @@ public class KeywordColorTagSuffix implements IKeywordColorTag {
     public String getColorTag(Keyword keyword) {
         String n = keyword.getName();
         if(n.toLowerCase().endsWith(suffix)) {
-            n = TextWriter.getTag(keyword.getColour()) + n.substring(0, n.length() - suffix.length()).toLowerCase() + TextWriter.getTag(color) + suffix + "[cu]";
+            n = TextWriter.getTag(keyword.getColour()) + n.substring(0, n.length() - suffix.length()).toLowerCase() + TextWriter.getTag(color) + suffix + "[cu][cu]";
         }
 
         return n;
