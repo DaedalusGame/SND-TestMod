@@ -15,7 +15,7 @@ public class PipeItemExactPips extends PipeRegexNamed<Item> {
     public static final PRNPart PREF = new PRNPref("exact");
 
     public PipeItemExactPips() {
-        super(PREF, UP_TO_TWO_DIGITS);
+        super(PREF, UP_TO_THREE_DIGITS);
     }
 
     @Override

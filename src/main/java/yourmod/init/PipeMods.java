@@ -15,6 +15,7 @@ public class PipeMods implements IInitializeModPipes {
         PipeMod.pipes.add(new PipeModSpellNameKeyword());
         PipeMod.pipes.add(new PipeModToOrange());
         PipeMod.pipes.add(new PipeModAddFights());
+        PipeMod.pipes.add(new PipeModBeginTurnSpell());
     }
 
     @Override

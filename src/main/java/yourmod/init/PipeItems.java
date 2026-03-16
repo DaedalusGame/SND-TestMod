@@ -4,9 +4,13 @@ import basemod.pipes.*;
 import com.tann.dice.gameplay.content.gen.pipe.item.PipeItem;
 import com.tann.dice.gameplay.content.item.ItBill;
 import com.tann.dice.gameplay.content.item.Item;
+import com.tann.dice.gameplay.effect.eff.keyword.Keyword;
 import com.tann.dice.gameplay.trigger.personal.affectSideModular.AffectSides;
+import com.tann.dice.gameplay.trigger.personal.affectSideModular.condition.PrimeCondition;
 import com.tann.dice.gameplay.trigger.personal.affectSideModular.condition.SpecificSidesType;
+import com.tann.dice.gameplay.trigger.personal.affectSideModular.effect.AddKeyword;
 import com.tann.dice.gameplay.trigger.personal.affectSideModular.effect.ChangeToMyPosition;
+import com.tann.dice.gameplay.trigger.personal.affectSideModular.effect.NextPrime;
 import yourmod.effect.LostAtEndOfFight;
 import yourmod.effect.SetToLowest;
 import yourmod.effect.TogBuffTimeEx;
@@ -59,6 +63,9 @@ public class PipeItems implements IInitializeItemPipes {
         list.add((new ItBill("right spear")).prs(new AffectSides(new ChangeToMyPosition(SpecificSidesType.Right))).bItem());
         list.add((new ItBill("mid spear")).prs(new AffectSides(new ChangeToMyPosition(SpecificSidesType.Middle))).bItem());
         list.add((new ItBill("rightmost spear")).prs(new AffectSides(new ChangeToMyPosition(SpecificSidesType.RightMost))).bItem());
+
+        list.add((new ItBill("kfuture")).prs(new AddKeyword(Keyword.future)).bItem());
+        list.add((new ItBill("nprime")).prs(new PrimeCondition(), new NextPrime()).bItem());
 
         for (Item item : list) {
             String name = item.getName(false);
