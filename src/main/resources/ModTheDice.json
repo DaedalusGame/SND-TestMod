@@ -2,7 +2,9 @@
   "modid": "${ModID}",
   "name": "${project.name}",
   "author_list": [
-    "Bord"
+    "Bord",
+    "Sefcear",
+    "Leonard Curry"
   ],
   "description": "${project.description}",
   "version": "${project.version}",
