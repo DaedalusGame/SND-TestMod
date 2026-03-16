@@ -39,7 +39,7 @@ public class PipeModSpellNameKeyword extends PipeRegexNamed<Modifier> {
                     tier = -0.069f;
                 }
             }
-            return new Modifier(tier, PREF + keyword.name(), new GlobalSpellKeywordEx(name,keyword));
+            return new Modifier(tier, PREF + name + COLON + keyword.name(), new GlobalSpellKeywordEx(name,keyword));
         } catch (Exception ex) {
             return null;
         }
