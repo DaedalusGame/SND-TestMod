@@ -4,14 +4,17 @@ import basemod.KeywordRegistry;
 import basemod.LazyS;
 import basemod.conditionalBonus.ConditionalBonusTypeRegistry;
 import basemod.conditionalBonus.IConditionalBonusType;
+import basemod.keywords.IKeywordValueCalculator;
 import basemod.keywords.IOnAfterUseEffect;
 import basemod.keywords.IOnUseEffect;
 import basemod.keywords.LazyKeyword;
 import com.tann.dice.gameplay.content.ent.Ent;
 import com.tann.dice.gameplay.content.ent.Hero;
+import com.tann.dice.gameplay.content.ent.type.EntType;
 import com.tann.dice.gameplay.effect.Buff;
 import com.tann.dice.gameplay.effect.eff.Eff;
 import com.tann.dice.gameplay.effect.eff.EffBill;
+import com.tann.dice.gameplay.effect.eff.EffType;
 import com.tann.dice.gameplay.effect.eff.VisualEffectType;
 import com.tann.dice.gameplay.effect.eff.conditionalBonus.ConditionalBonus;
 import com.tann.dice.gameplay.effect.eff.conditionalBonus.ConditionalBonusType;
@@ -330,6 +333,19 @@ public class Keywords implements basemod.keywords.IKeywordInitializer  {
         KeywordRegistry.colorTagRegistry.register("hpcost", cost);
         KeywordRegistry.colorTagRegistry.register("shieldcost", cost);
 
+        KeywordRegistry.valueCalculatorRegistry.register("hpCost", new IKeywordValueCalculator() {
+            @Override
+            public float getFinalEffectTierAdjustment(Keyword k, Eff e, float val, int tier, EntType type, boolean isPlayer) {
+                return val - EffType.Heal.getEffectTier(tier, (float)e.getValue(), true, e);
+            }
+        });
+        KeywordRegistry.valueCalculatorRegistry.register("shieldcost", new IKeywordValueCalculator() {
+            @Override
+            public float getFinalEffectTierAdjustment(Keyword k, Eff e, float val, int tier, EntType type, boolean isPlayer) {
+                return val - EffType.Shield.getEffectTier(tier, (float)e.getValue(), true, e);
+            }
+        });
+
         KeywordRegistry.onAfterUseEffects.register("poisoncost", new IOnAfterUseEffect() {
             @Override
             public void activate(int kVal, Eff src, List<Keyword> keywords, Snapshot snapshot, Ent source, int sideIndex) {
@@ -371,7 +387,7 @@ public class Keywords implements basemod.keywords.IKeywordInitializer  {
             @Override
             public void activate(int kVal, Eff src, List<Keyword> keywords, Snapshot snapshot, Ent source, int sideIndex) {
                 EntState state = snapshot.getState(source);
-                state.takePain(kVal);
+                state.directDamage(kVal, null, null, null, false);
             }
         });
         KeywordRegistry.keywordUsableRegistry.register("hpcost", new EntKeywordUsable() {
@@ -437,6 +453,22 @@ public class Keywords implements basemod.keywords.IKeywordInitializer  {
         KeywordRegistry.registerConditionalBonus("skilllimit", Colours.light, "pips are limited to my level", "",  new LazyS<>(() -> new ConditionalBonus(ConditionalBonusType.valueOf("LimitMyTier"))),null);
         //KeywordRegistry.registerConditionalBonus("deathrite", Colours.light, KUtils.describePipBonus("death side on all characters"), "",  new LazyS<>(() -> new ConditionalBonus(ConditionalBonusType.valueOf("SidesDeath"))), null);
         KeywordRegistry.registerGroup("groupDeath", new LazyKeyword("death"), false);
+        KeywordRegistry.valueCalculatorRegistry.register("groupDeath", new IKeywordValueCalculator() {
+            @Override
+            public boolean allowAutoskip(Keyword k) {
+                return true;
+            }
+
+            @Override
+            public float getValueMultiplier(Keyword k, Eff e, boolean player, int tier) {
+                return 1.0f;
+            }
+
+            @Override
+            public float getFinalEffectTierAdjustment(Keyword k, Eff e, float val, int tier, EntType type, boolean isPlayer) {
+                return val * 0.33f - 0.1f;
+            }
+        });
         //KeywordRegistry.registerConditionalBonus("halve", Colours.blue, "halves", "",  new LazyS<>(() -> new ConditionalBonus(EnumConditionalRequirement.Always, ConditionalBonusType.Divide, 2)));
 
         KeywordRegistry.colorTagRegistry.register("chargelimit", limit);

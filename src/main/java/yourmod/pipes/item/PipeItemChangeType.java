@@ -51,7 +51,7 @@ public class PipeItemChangeType extends PipeRegexNamed<Item> {
         Eff effForDesc = entSide.getCalculatedEffect().copy();
         if(effForDesc.getValue() != -999) effForDesc.setValue(69);
 
-        String desc = effForDesc.describe().replace("69 ", "");
+        String desc = effForDesc.describe().replace(" 69", "");
         ChangeType changeType = new ChangeTypeEx(ensibi, desc, val == -999 ? 1 : val, original);
         return new ItBill(PREF + ht.getName()).prs(changeType).bItem();
     }

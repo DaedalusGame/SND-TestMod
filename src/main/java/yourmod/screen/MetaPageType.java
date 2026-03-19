@@ -5,12 +5,16 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.tann.dice.Main;
 import com.tann.dice.gameplay.content.ent.type.EntType;
+import com.tann.dice.gameplay.content.ent.type.HeroType;
+import com.tann.dice.gameplay.content.ent.type.MonsterType;
 import com.tann.dice.gameplay.content.gen.pipe.Pipe;
+import com.tann.dice.gameplay.content.item.Item;
 import com.tann.dice.gameplay.effect.eff.Eff;
 import com.tann.dice.gameplay.effect.eff.keyword.KUtils;
 import com.tann.dice.gameplay.effect.eff.keyword.Keyword;
 import com.tann.dice.gameplay.fightLog.EntState;
 import com.tann.dice.gameplay.mode.creative.pastey.PasteMode;
+import com.tann.dice.gameplay.modifier.Modifier;
 import com.tann.dice.gameplay.phase.levelEndPhase.rewardPhase.decisionPhase.choice.choosable.Choosable;
 import com.tann.dice.gameplay.progress.chievo.unlock.Unlockable;
 import com.tann.dice.gameplay.save.settings.option.OptionLib;
@@ -26,10 +30,11 @@ import com.tann.dice.util.tp.TTP;
 import com.tann.dice.util.ui.ClipboardUtils;
 import com.tann.dice.util.ui.ScrollPane;
 import com.tann.dice.util.ui.choice.ChoiceDialog;
-import com.tann.dice.util.ui.resolver.MetaResolver;
-import com.tann.dice.util.ui.resolver.Resolver;
+import com.tann.dice.util.ui.resolver.*;
 import com.tann.dice.util.ui.standardButton.StandardButton;
 import yourmod.Mod;
+import yourmod.pipes.meta.MetaThing;
+import yourmod.pipes.meta.MetaThingResolver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +46,9 @@ public class MetaPageType implements ILedgerPageType {
     }
 
     private static void attemptToAddPin(Object o, List<String> pinnedStrings, int contentWidth, LedgerPage ledgerPage) {
-        if (o instanceof EntType) {
+        if (o instanceof MetaThing) {
+            addPin(((MetaThing)o).getName(), pinnedStrings);
+        } else if (o instanceof EntType) {
             addPin(((EntType)o).getName(), pinnedStrings);
         } else if (o instanceof Unlockable && o instanceof Choosable) {
             Choosable c = (Choosable)o;
@@ -85,7 +92,7 @@ public class MetaPageType implements ILedgerPageType {
         Pixl p = new Pixl(3);
         List<Actor> buttons = new ArrayList<Actor>();
 
-        MetaResolver resolver = new MetaResolver() {
+        Resolver resolver = new Resolver() {
             @Override
             public void resolve(Object o) {
                 attemptToAddPin(o, pinnedStrings, contentWidth, ledgerPage);
@@ -170,7 +177,7 @@ public class MetaPageType implements ILedgerPageType {
 
         final List<TP<String, Actor>> pinnedElements = new ArrayList<>();
 
-        MetaResolver mr = new MetaResolver() {
+        MetaResolver mr = new Resolver() {
             public void resolve(Object o) {
                 if (o instanceof EntType) {
                     EntType et = (EntType) o;
@@ -232,5 +239,30 @@ public class MetaPageType implements ILedgerPageType {
         p.row(3).actor(OptionLib.SHOW_COPY.makeFullDescribedUnlockActor());
 
         return p.pix();
+    }
+
+    public static abstract class Resolver extends MetaResolver {
+
+        public Resolver() {
+            super(new ModifierResolver() {
+                public void resolve(Modifier modifier) {
+                }
+            }, new KeywordResolver() {
+                public void resolve(Keyword keyword) {
+                }
+            }, new ItemResolver() {
+                public void resolve(Item item) {
+                }
+            }, new MonsterTypeResolver() {
+                public void resolve(MonsterType type) {
+                }
+            }, new HeroTypeResolver() {
+                public void resolve(HeroType heroType) {
+                }
+            }, new MetaThingResolver() {
+                public void resolve(MetaThing metaThing) {
+                }
+            });
+        }
     }
 }

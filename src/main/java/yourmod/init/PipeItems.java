@@ -48,6 +48,8 @@ public class PipeItems implements IInitializeItemPipes {
         PipeItem.pipes.add(new PipeItemAddKeywordColor());
         PipeItem.pipes.add(new PipeItemRemoveKeywordColor());
         //PipeItem.pipes.add(new PipeItemForge());
+        PipeItem.pipes.add(new PipeItemTotem());
+        PipeItem.pipes.add(new PipeItemSival());
     }
 
     @Override

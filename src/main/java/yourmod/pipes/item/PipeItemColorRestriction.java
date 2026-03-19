@@ -7,6 +7,7 @@ import com.tann.dice.gameplay.content.item.ItBill;
 import com.tann.dice.gameplay.content.item.Item;
 import com.tann.dice.gameplay.content.ent.type.HeroCol;
 import com.tann.dice.gameplay.trigger.personal.Personal;
+import com.tann.dice.gameplay.trigger.personal.equipRestrict.EquipRestrictCol;
 import com.tann.dice.gameplay.trigger.personal.hp.MaxHP;
 import com.tann.dice.gameplay.trigger.personal.linked.stateCondition.ColLink;
 import com.tann.dice.util.Tann;
@@ -25,7 +26,7 @@ public class PipeItemColorRestriction extends PipeRegexNamed<Item> {
     }
 
     private Item makeInternal(HeroCol col) {
-        return new ItBill(-69, PREF + col.shortName()).prs((Personal)new ColLink(col, (Personal)new MaxHP(1))).bItem();
+        return new ItBill(-69, PREF + col.shortName()).prs(new ColLink(col, new EquipRestrictCol(col))).bItem();
     }
 
     @Override

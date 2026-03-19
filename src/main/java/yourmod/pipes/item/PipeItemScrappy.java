@@ -18,7 +18,8 @@ public class PipeItemScrappy extends Pipe<Item> {
     protected Item generateInternal(boolean wild) {
         Item pt = ItemLib.random();
         int tier = pt.getTier();
-        return ItemLib.byName("("+pt.getName()+"#scrap).tier."+tier+".n.Scrappy "+pt.getName(true));
+        int newTier = Math.round((float)pt.getTier() * 0.6f - Math.signum(tier) * 1.4f);
+        return ItemLib.byName("("+pt.getName()+"#scrap).tier."+newTier+".n.Scrappy "+pt.getName(true));
     }
 
     @Override
