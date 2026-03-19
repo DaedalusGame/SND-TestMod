@@ -16,6 +16,7 @@ import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
 import yourmod.Mod;
 import yourmod.init.PipeMods;
+import yourmod.pipes.meta.MetaThingLib;
 import yourmod.pipes.meta.PipeMetaThing;
 
 import java.util.List;
@@ -32,11 +33,20 @@ public class PipeMonsterGeneratedPatch {
             monTypes.add(new MTBill(size).name("noname").sides(ESB.blank,ESB.blank,ESB.blank,ESB.blank,ESB.blank,ESB.blank).bEntType());
         }
 
-        for (String meta : Mod.metaStorage.getPins()) {
-            MonsterType monType = MonsterTypeLib.safeByName(meta);
-            if(!monType.isMissingno() && (checkSize && monType.size == size)) {
-                monTypes.add(monType);
+        if(MetaThingLib.isLoadingMeta.isOpen()) {
+            return monTypes;
+        }
+
+        MetaThingLib.isLoadingMeta.open();
+        try {
+            for (String meta : Mod.metaStorage.getPins()) {
+                MonsterType monType = MonsterTypeLib.safeByName(meta);
+                if(!monType.isMissingno() && (checkSize && monType.size == size)) {
+                    monTypes.add(monType);
+                }
             }
+        } finally {
+            MetaThingLib.isLoadingMeta.close();
         }
 
         return monTypes;

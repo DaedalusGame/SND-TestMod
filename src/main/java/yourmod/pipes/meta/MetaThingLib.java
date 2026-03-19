@@ -6,6 +6,7 @@ import com.tann.dice.gameplay.content.item.Item;
 import com.tann.dice.gameplay.modifier.Modifier;
 import com.tann.dice.util.ui.resolver.MetaResolver;
 import yourmod.Mod;
+import yourmod.RecursionScope;
 import yourmod.screen.MetaPageType;
 
 import javax.annotation.Nonnull;
@@ -14,6 +15,7 @@ import java.util.List;
 
 public class MetaThingLib {
     private static List<Object> cache;
+    public static RecursionScope isLoadingMeta = new RecursionScope();
 
     @Nonnull
     public static MetaThing byName(String name) {
@@ -42,8 +44,13 @@ public class MetaThingLib {
                 }
             };
 
-            for (String pin : Mod.metaStorage.getPins()) {
-                resolver.debugResolve(pin);
+            isLoadingMeta.open();
+            try {
+                for (String pin : Mod.metaStorage.getPins()) {
+                    resolver.debugResolve(pin);
+                }
+            } finally {
+                isLoadingMeta.close();
             }
         }
 

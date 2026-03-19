@@ -18,10 +18,7 @@ import com.tann.dice.util.Colours;
 import com.tann.dice.util.Pixl;
 import com.tann.dice.util.TannLog;
 import com.tann.dice.util.saves.Prefs;
-import yourmod.init.Keywords;
-import yourmod.init.PipeItems;
-import yourmod.init.PipeMods;
-import yourmod.init.PipeMonsters;
+import yourmod.init.*;
 import yourmod.pipes.meta.PipeMetaThing;
 import yourmod.screen.MetaPageType;
 import yourmod.screen.MetaStorage;
@@ -74,6 +71,7 @@ public class Mod {
         BaseMod.register(new PipeItems());
         BaseMod.register(new PipeMods());
         BaseMod.register(new PipeMonsters());
+        BaseMod.register(new PipeHeros());
 
         LedgerPageTypeRegistry.registerLedgerPage("Meta", Colours.BLURPLE, new MetaPageType());
 

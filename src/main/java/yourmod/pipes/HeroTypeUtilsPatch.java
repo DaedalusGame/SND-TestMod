@@ -16,6 +16,7 @@ import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
 import yourmod.Mod;
 import yourmod.init.PipeMods;
+import yourmod.pipes.meta.MetaThingLib;
 import yourmod.pipes.meta.PipeMetaThing;
 import yourmod.screen.MetaStorage;
 
@@ -33,11 +34,20 @@ public class HeroTypeUtilsPatch {
             }
         }
 
-        for (String meta : Mod.metaStorage.getPins()) {
-            HeroType heroType = HeroTypeLib.safeByName(meta);
-            if(!heroType.isMissingno()) {
-                heroTypes.add(heroType);
+        if(MetaThingLib.isLoadingMeta.isOpen()) {
+            return heroTypes;
+        }
+
+        MetaThingLib.isLoadingMeta.open();
+        try {
+            for (String meta : Mod.metaStorage.getPins()) {
+                HeroType heroType = HeroTypeLib.safeByName(meta);
+                if(!heroType.isMissingno()) {
+                    heroTypes.add(heroType);
+                }
             }
+        } finally {
+            MetaThingLib.isLoadingMeta.close();
         }
 
         return heroTypes;
