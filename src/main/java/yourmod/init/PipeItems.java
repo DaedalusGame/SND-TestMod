@@ -4,12 +4,15 @@ import basemod.pipes.*;
 import com.tann.dice.gameplay.content.gen.pipe.item.PipeItem;
 import com.tann.dice.gameplay.content.item.ItBill;
 import com.tann.dice.gameplay.content.item.Item;
+import com.tann.dice.gameplay.effect.eff.EffType;
 import com.tann.dice.gameplay.effect.eff.keyword.Keyword;
 import com.tann.dice.gameplay.trigger.personal.affectSideModular.AffectSides;
 import com.tann.dice.gameplay.trigger.personal.affectSideModular.condition.PrimeCondition;
 import com.tann.dice.gameplay.trigger.personal.affectSideModular.condition.SpecificSidesType;
+import com.tann.dice.gameplay.trigger.personal.affectSideModular.condition.TypeCondition;
 import com.tann.dice.gameplay.trigger.personal.affectSideModular.effect.AddKeyword;
 import com.tann.dice.gameplay.trigger.personal.affectSideModular.effect.ChangeToMyPosition;
+import com.tann.dice.gameplay.trigger.personal.affectSideModular.effect.FlatBonus;
 import com.tann.dice.gameplay.trigger.personal.affectSideModular.effect.NextPrime;
 import yourmod.effect.LostAtEndOfFight;
 import yourmod.effect.SetToLowest;
@@ -50,6 +53,8 @@ public class PipeItems implements IInitializeItemPipes {
         //PipeItem.pipes.add(new PipeItemForge());
         PipeItem.pipes.add(new PipeItemTotem());
         PipeItem.pipes.add(new PipeItemSival());
+        PipeItem.pipes.add(new PipeItemResData());
+        PipeItem.pipes.add(new PipeItemDoom());
     }
 
     @Override
@@ -68,6 +73,9 @@ public class PipeItems implements IInitializeItemPipes {
 
         list.add((new ItBill("kfuture")).prs(new AddKeyword(Keyword.future)).bItem());
         list.add((new ItBill("nprime")).prs(new PrimeCondition(), new NextPrime()).bItem());
+        list.add((new ItBill("tkill")).prs(new TypeCondition(EffType.Kill), new FlatBonus(1)).bItem());
+        list.add((new ItBill("tbuff")).prs(new TypeCondition(EffType.Buff), new FlatBonus(1)).bItem());
+        list.add((new ItBill("ttarget")).prs(new TypeCondition(EffType.JustTarget), new FlatBonus(1)).bItem());
 
         for (Item item : list) {
             String name = item.getName(false);

@@ -38,7 +38,7 @@ public class Overburn extends Merge {
     }
 
     public String describeForSelfBuff() {
-        return this.value + " overburn";
+        return "[notranslate][blue]Overburn[cu] " + value+ " ([blue]" + Tann.repeat("[hp-diamond][p]", this.value) + "[cu])";
     }
 
     public boolean canMergeInternal(Personal personal) {

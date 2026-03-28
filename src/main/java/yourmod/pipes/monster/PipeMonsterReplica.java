@@ -15,9 +15,11 @@ import com.tann.dice.gameplay.content.ent.type.lib.MonsterTypeLib;
 import com.tann.dice.gameplay.content.gen.pipe.regex.PipeRegexNamed;
 import com.tann.dice.gameplay.content.gen.pipe.regex.prnPart.PRNPart;
 import com.tann.dice.gameplay.content.gen.pipe.regex.prnPart.pos.PRNPref;
+import com.tann.dice.gameplay.effect.Trait;
 import com.tann.dice.gameplay.effect.eff.Eff;
 import com.tann.dice.gameplay.fightLog.EntSideState;
 import com.tann.dice.gameplay.trigger.personal.RenameHero;
+import yourmod.TrueNameUtils;
 
 import java.util.List;
 
@@ -40,6 +42,7 @@ public class PipeMonsterReplica extends PipeRegexNamed<MonsterType> {
             String name = PREF + src.getName();
             MTBill htb = EntTypeUtils.copy(src).clearTraits().name(name).sides(sidesFromHero(src.makeEnt()));
             String disp = src.getName(true, false);
+            TrueNameUtils.setTrueName(htb, disp);
             if (!disp.equals(src.getName())) {
                 htb.trait(new RenameHero(disp));
             }

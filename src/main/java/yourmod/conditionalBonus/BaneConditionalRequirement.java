@@ -2,6 +2,8 @@ package yourmod.conditionalBonus;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.tann.dice.gameplay.content.ent.Ent;
+import com.tann.dice.gameplay.content.ent.type.EntType;
+import com.tann.dice.gameplay.content.ent.type.lib.EntTypeUtils;
 import com.tann.dice.gameplay.effect.eff.Eff;
 import com.tann.dice.gameplay.effect.eff.conditionalBonus.conditionalRequirement.ConditionalRequirement;
 import com.tann.dice.gameplay.fightLog.EntState;
@@ -58,6 +60,12 @@ public class BaneConditionalRequirement implements ConditionalRequirement {
 
     @Override
     public Actor getRestrictionActor() {
+        EntType entType = EntTypeUtils.byName(name);
+
+        if(entType != null) {
+            return (new Pixl()).image(entType.portrait).pix();
+        }
+
         return (new Pixl()).text(this.getBasicString()).pix();
     }
 

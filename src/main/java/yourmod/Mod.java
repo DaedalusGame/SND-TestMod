@@ -2,29 +2,29 @@ package yourmod;
 
 import basemod.BaseMod;
 import basemod.LazyS;
-import basemod.ledger.ILedgerPageType;
+import basemod.ability.AbilityRegistry;
+import basemod.ability.ITacticCostType;
 import basemod.ledger.LedgerPageTypeRegistry;
 import basemod.sides.SpecificSidesTypeRegistry;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.bord.dice.modthedice.Loader;
 import com.bord.dice.modthedice.lib.SpireInitializer;
 import com.tann.dice.Main;
-import com.tann.dice.gameplay.save.settings.Settings;
-import com.tann.dice.screens.dungeon.panels.book.page.ledgerPage.LedgerPage;
+import com.tann.dice.gameplay.effect.eff.Eff;
+import com.tann.dice.gameplay.effect.eff.EffType;
+import com.tann.dice.gameplay.effect.eff.keyword.Keyword;
+import com.tann.dice.gameplay.effect.targetable.ability.tactic.TacticCostType;
 import com.tann.dice.statics.Images;
 import com.tann.dice.util.Colours;
-import com.tann.dice.util.Pixl;
 import com.tann.dice.util.TannLog;
 import com.tann.dice.util.saves.Prefs;
 import yourmod.init.*;
-import yourmod.pipes.meta.PipeMetaThing;
 import yourmod.screen.MetaPageType;
 import yourmod.screen.MetaStorage;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.function.Function;
 
 @SpireInitializer
 public class Mod {
@@ -71,7 +71,97 @@ public class Mod {
         BaseMod.register(new PipeItems());
         BaseMod.register(new PipeMods());
         BaseMod.register(new PipeMonsters());
-        BaseMod.register(new PipeHeros());
+        BaseMod.register(new PipeHeroes());
+
+        EffTypes.init();
+
+        AbilityRegistry.textModFuncs.add((Function<Eff, TacticCostType>) eff -> {
+            if(eff.getType() == EffType.Kill) {
+                return TacticCostType.valueOf("kill");
+            }
+            if(eff.getType() == EffType.Summon) {
+                return TacticCostType.valueOf("summon");
+            }
+            if(eff.getType() == EffType.Buff) {
+                return TacticCostType.valueOf("buff");
+            }
+            if(eff.hasKeyword(Keyword.charged)) {
+                return TacticCostType.valueOf("charged");
+            }
+            if(eff.hasKeyword(Keyword.nothing)) {
+                return TacticCostType.valueOf("nothing");
+            }
+            if(eff.getValue() == 999) {
+                return TacticCostType.valueOf("wildSide");
+            }
+            return null;
+        });
+        AbilityRegistry.registerTacticCostType("charged", "charged", true, new ITacticCostType() {
+            @Override
+            public String desc(TacticCostType instance) {
+                return "[blue]charged[cu] pip";
+            }
+
+            @Override
+            public boolean isValid(TacticCostType instance, Eff checkEff) {
+                return checkEff.hasKeyword(Keyword.charged);
+            }
+        });
+        AbilityRegistry.registerTacticCostType("nothing", "nothing", false, new ITacticCostType() {
+            @Override
+            public String desc(TacticCostType instance) {
+                return "[grey]nothing[cu] side";
+            }
+
+            @Override
+            public boolean isValid(TacticCostType instance, Eff checkEff) {
+                return checkEff.hasKeyword(Keyword.nothing);
+            }
+        });
+        AbilityRegistry.registerTacticCostType("wildSide", "wildside", false, new ITacticCostType() {
+            @Override
+            public String desc(TacticCostType instance) {
+                return "any side";
+            }
+
+            @Override
+            public boolean isValid(TacticCostType instance, Eff checkEff) {
+                return true;
+            }
+        });
+        AbilityRegistry.registerTacticCostType("kill", "kill", false, new ITacticCostType() {
+            @Override
+            public String desc(TacticCostType instance) {
+                return "kill side";
+            }
+
+            @Override
+            public boolean isValid(TacticCostType instance, Eff checkEff) {
+                return checkEff.getType() == EffType.Kill;
+            }
+        });
+        AbilityRegistry.registerTacticCostType("summon", "summon", true, new ITacticCostType() {
+            @Override
+            public String desc(TacticCostType instance) {
+                return "summon pip";
+            }
+
+            @Override
+            public boolean isValid(TacticCostType instance, Eff checkEff) {
+                return checkEff.getType() == EffType.Summon;
+            }
+        });
+        AbilityRegistry.registerTacticCostType("buff", "buff", false, new ITacticCostType() {
+            @Override
+            public String desc(TacticCostType instance) {
+                return "buff side";
+            }
+
+            @Override
+            public boolean isValid(TacticCostType instance, Eff checkEff) {
+                return checkEff.getType() == EffType.Buff;
+            }
+        });
 
         LedgerPageTypeRegistry.registerLedgerPage("Meta", Colours.BLURPLE, new MetaPageType());
 

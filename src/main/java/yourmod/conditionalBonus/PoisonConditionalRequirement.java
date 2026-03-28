@@ -6,6 +6,7 @@ import com.tann.dice.gameplay.effect.eff.conditionalBonus.conditionalRequirement
 import com.tann.dice.gameplay.fightLog.EntState;
 import com.tann.dice.gameplay.fightLog.Snapshot;
 import com.tann.dice.util.Pixl;
+import com.tann.dice.util.ui.HpGrid;
 
 public class PoisonConditionalRequirement implements ConditionalRequirement {
     boolean isTarget;
@@ -46,7 +47,7 @@ public class PoisonConditionalRequirement implements ConditionalRequirement {
 
     @Override
     public Actor getRestrictionActor() {
-        return (new Pixl()).text(this.getBasicString()).pix();
+        return HpGrid.make(3, 0, 3,3);
     }
 
     @Override

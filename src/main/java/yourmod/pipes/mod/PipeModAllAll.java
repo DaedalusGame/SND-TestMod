@@ -1,45 +1,43 @@
 package yourmod.pipes.mod;
 
 import com.tann.dice.gameplay.content.gen.pipe.regex.PipeRegexNamed;
-import com.tann.dice.gameplay.content.gen.pipe.regex.prnPart.PRNPart;
 import com.tann.dice.gameplay.content.gen.pipe.regex.prnPart.pos.PRNPref;
 import com.tann.dice.gameplay.content.item.Item;
 import com.tann.dice.gameplay.content.item.ItemLib;
-import com.tann.dice.gameplay.effect.eff.keyword.Keyword;
 import com.tann.dice.gameplay.modifier.Modifier;
-import com.tann.dice.gameplay.trigger.global.Global;
 import com.tann.dice.gameplay.trigger.global.linked.all.GlobalAllEntities;
-import com.tann.dice.gameplay.trigger.personal.item.AsIfHasItem;
-import com.tann.dice.gameplay.trigger.personal.linked.LinkedPersonal;
 import com.tann.dice.gameplay.trigger.personal.linked.MultiDifferentPersonal;
 
 public class PipeModAllAll extends PipeRegexNamed<Modifier> {
-    private static PRNPart PREF = new PRNPref("allall");
+    String str;
+    Boolean type;
 
-    public PipeModAllAll() {
-        super(PREF, ITEM);
+    public PipeModAllAll(String str, Boolean type) {
+        super(new PRNPref("all"+str), ITEM);
+        this.str = str;
+        this.type = type;
     }
 
     protected Modifier internalMake(String[] groups) {
         String ms = groups[0];
-        return bad(ms) ? null : makeItemAll(ItemLib.byName(ms));
+        return bad(ms) ? null : makeItemAll(ItemLib.byName(ms), type, str);
     }
 
-    public static Modifier makeItemAll(Item item) {
+    public static Modifier makeItemAll(Item item, Boolean type, String str) {
         if (item.isMissingno()) {
             return null;
         } else {
             float calcTier = -0.069F;
 
-            GlobalAllEntities allEntities = new GlobalAllEntities(null, new MultiDifferentPersonal(item.getPersonals()));
+            GlobalAllEntities allEntities = new GlobalAllEntities(type, new MultiDifferentPersonal(item.getPersonals()));
 
-            return new Modifier(calcTier, PREF + item.getName(), allEntities);
+            return new Modifier(calcTier, "all"+ str + "." + item.getName(), allEntities);
         }
     }
 
     public Modifier example() {
         Item i = ItemLib.random();
-        return makeItemAll(i);
+        return makeItemAll(i, type, str);
     }
 
     public boolean showHigher() {

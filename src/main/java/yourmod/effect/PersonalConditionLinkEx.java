@@ -34,6 +34,11 @@ public class PersonalConditionLinkEx extends PersonalConditionLink {
         this((ConditionalRequirement)(new GSCConditionalRequirement(gsc)), linked);
     }
 
+    @Override
+    public Personal splice(Personal p) {
+        return new PersonalConditionLinkEx(req, p);
+    }
+
     boolean recCheck = false;
 
     @Override
@@ -45,7 +50,9 @@ public class PersonalConditionLinkEx extends PersonalConditionLink {
         try {
             recCheck = true;
 
-            if (!this.req.isValid(snapshot, entState, entState, (Eff) null)) {
+            //Eff eff = entState.getCurrentSideState().getCalculatedEffect();
+
+            if (!this.req.isValid(snapshot, entState, entState, null)) {
                 return null;
             } else {
                 if (this.pList == null) {
@@ -54,6 +61,9 @@ public class PersonalConditionLinkEx extends PersonalConditionLink {
 
                 return this.pList;
             }
+
+        } catch (Exception e) {
+            return null;
         } finally {
             recCheck = false;
         }

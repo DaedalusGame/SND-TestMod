@@ -6,7 +6,7 @@ import com.tann.dice.gameplay.content.gen.pipe.entity.hero.PipeHeroReplica;
 import com.tann.dice.gameplay.effect.Buff;
 import com.tann.dice.gameplay.effect.Trait;
 import com.tann.dice.gameplay.fightLog.EntState;
-import yourmod.effect.TrueName;
+import yourmod.TrueNameUtils;
 
 @SpirePatch2(
         clz = PipeHeroReplica.class,
@@ -15,7 +15,8 @@ import yourmod.effect.TrueName;
 public class PipeHeroReplicaPatch {
     public static HeroType Postfix(HeroType __result, HeroType src)
     {
-        __result.traits.add(new Trait(new TrueName(src.getName(true, false))));
+        TrueNameUtils.setTrueName(__result, src.getName(true, false));
+        //__result.traits.add(new Trait(new TrueName(src.getName(true, false))));
         return __result;
     }
 }

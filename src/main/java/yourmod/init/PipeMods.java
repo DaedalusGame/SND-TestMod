@@ -13,7 +13,9 @@ public class PipeMods implements IInitializeModPipes {
 
     @Override
     public void initialize() {
-        PipeMod.pipes.add(new PipeModAllAll());
+        PipeMod.pipes.add(new PipeModAllAll("all", null));
+        PipeMod.pipes.add(new PipeModAllAll("p", true));
+        PipeMod.pipes.add(new PipeModAllAll("e", false));
         PipeMod.pipes.add(new PipeModSpellKeyword());
         PipeMod.pipes.add(new PipeModSpellNameKeyword());
         PipeMod.pipes.add(new PipeModToOrange());
