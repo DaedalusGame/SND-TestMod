@@ -4,7 +4,7 @@
     <groupId>UnimportantInfo</groupId>
 
     <artifactId>TestMod</artifactId>
-    <version>0.0.10</version>
+    <version>0.0.11</version>
     <name>Test Mod</name>
     <description>Basic mod that adds many new textmod pipes and custom keywords</description>
     <!-- Change the above for mod information. -->

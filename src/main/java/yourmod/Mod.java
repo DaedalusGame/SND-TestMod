@@ -6,6 +6,7 @@ import basemod.ability.AbilityRegistry;
 import basemod.ability.ITacticCostType;
 import basemod.ledger.LedgerPageTypeRegistry;
 import basemod.sides.SpecificSidesTypeRegistry;
+import basemod.util.ReflectionUtils;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.bord.dice.modthedice.lib.SpireInitializer;

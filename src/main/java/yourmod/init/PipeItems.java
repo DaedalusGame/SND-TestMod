@@ -7,17 +7,13 @@ import com.tann.dice.gameplay.content.item.Item;
 import com.tann.dice.gameplay.effect.eff.EffType;
 import com.tann.dice.gameplay.effect.eff.keyword.Keyword;
 import com.tann.dice.gameplay.trigger.personal.affectSideModular.AffectSides;
+import com.tann.dice.gameplay.trigger.personal.affectSideModular.condition.HasKeyword;
 import com.tann.dice.gameplay.trigger.personal.affectSideModular.condition.PrimeCondition;
 import com.tann.dice.gameplay.trigger.personal.affectSideModular.condition.SpecificSidesType;
 import com.tann.dice.gameplay.trigger.personal.affectSideModular.condition.TypeCondition;
-import com.tann.dice.gameplay.trigger.personal.affectSideModular.effect.AddKeyword;
-import com.tann.dice.gameplay.trigger.personal.affectSideModular.effect.ChangeToMyPosition;
-import com.tann.dice.gameplay.trigger.personal.affectSideModular.effect.FlatBonus;
-import com.tann.dice.gameplay.trigger.personal.affectSideModular.effect.NextPrime;
-import yourmod.effect.LostAtEndOfFight;
-import yourmod.effect.SetToLowest;
-import yourmod.effect.TogBuffTimeEx;
-import yourmod.effect.TogSideBuff;
+import com.tann.dice.gameplay.trigger.personal.affectSideModular.effect.*;
+import yourmod.conditionalBonus.FuelEmptyConditionalRequirement;
+import yourmod.effect.*;
 import yourmod.pipes.item.*;
 
 import java.util.ArrayList;
@@ -55,6 +51,7 @@ public class PipeItems implements IInitializeItemPipes {
         PipeItem.pipes.add(new PipeItemSival());
         PipeItem.pipes.add(new PipeItemResData());
         PipeItem.pipes.add(new PipeItemDoom());
+        PipeItem.pipes.add(new PipeItemBuffData());
     }
 
     @Override
@@ -76,6 +73,9 @@ public class PipeItems implements IInitializeItemPipes {
         list.add((new ItBill("tkill")).prs(new TypeCondition(EffType.Kill), new FlatBonus(1)).bItem());
         list.add((new ItBill("tbuff")).prs(new TypeCondition(EffType.Buff), new FlatBonus(1)).bItem());
         list.add((new ItBill("ttarget")).prs(new TypeCondition(EffType.JustTarget), new FlatBonus(1)).bItem());
+
+        //list.add((new ItBill("resfuelempty")).prs(new PersonalConditionLinkEx(new FuelEmptyConditionalRequirement(false), new AffectSides(new HasKeyword(Keyword.valueOf("fuel")),new AddKeyword(Keyword.singleUse), new RemoveKeyword(Keyword.valueOf("fuelcost"))))).bItem());
+        list.add((new ItBill("resfuelempty")).prs(new PersonalConditionLinkEx(new FuelEmptyConditionalRequirement(false), new AffectSides(new FlatBonus(1)))).bItem());
 
         for (Item item : list) {
             String name = item.getName(false);

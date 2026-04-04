@@ -16,6 +16,7 @@ import com.tann.dice.gameplay.trigger.personal.affectSideModular.AffectSides;
 import com.tann.dice.gameplay.trigger.personal.affectSideModular.condition.AffectSideCondition;
 import com.tann.dice.gameplay.trigger.personal.affectSideModular.condition.NotCondition;
 import com.tann.dice.gameplay.trigger.personal.linked.stateCondition.PersonalConditionLink;
+import yourmod.effect.PersonalConditionLinkEx;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +49,7 @@ public class PipeItemNon
         ConditionalRequirement req = ReflectionUtils.readField(ConditionalRequirement.class, PersonalConditionLink.class, in, "req");
         Personal linked = ReflectionUtils.readField(Personal.class, PersonalConditionLink.class, in, "linked");
 
-        return new PersonalConditionLink(new NotRequirement(req), linked);
+        return new PersonalConditionLinkEx(new NotRequirement(req), linked);
     }
 
     private Item makeInternal(Item item) {

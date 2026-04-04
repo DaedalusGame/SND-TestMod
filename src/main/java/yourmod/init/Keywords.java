@@ -39,7 +39,10 @@ import com.tann.dice.gameplay.trigger.personal.merge.Regen;
 import com.tann.dice.gameplay.trigger.personal.replaceSides.Decay;
 import com.tann.dice.screens.shaderFx.DeathType;
 import com.tann.dice.util.Colours;
+import com.tann.dice.util.Tann;
 import yourmod.TrueNameUtils;
+import yourmod.buffs.BuffUtil;
+import yourmod.buffs.Fuel;
 import yourmod.buffs.Overburn;
 import yourmod.buffs.Serenity;
 import yourmod.conditionalBonus.*;
@@ -157,6 +160,23 @@ public class Keywords implements basemod.keywords.IKeywordInitializer  {
                 }
 
                 return total;
+            }
+        });
+        ConditionalBonusTypeRegistry.registerBonus("Fuel", new IConditionalBonusType() {
+            @Override
+            public int getBonus(Snapshot s, EntState sourceState, EntState targetState, int bonusAmount, int value, Eff eff) {
+
+                return BuffUtil.getFuel(sourceState);
+            }
+        });
+        ConditionalBonusTypeRegistry.registerBonus("TheirFuel", new IConditionalBonusType() {
+            @Override
+            public int getBonus(Snapshot s, EntState sourceState, EntState targetState, int bonusAmount, int value, Eff eff) {
+                if (targetState == null) {
+                    return 0;
+                }
+
+                return BuffUtil.getFuel(targetState);
             }
         });
         ConditionalBonusTypeRegistry.registerBonus("Bones", new IConditionalBonusType() {
@@ -284,6 +304,18 @@ public class Keywords implements basemod.keywords.IKeywordInitializer  {
             }
         });
 
+        KeywordRegistry.registerBasic("reuse", Colours.blue, "target can use their dice again", "Cannot recharge the user", KeywordAllowType.UNKIND_TARG);
+
+        KeywordRegistry.onUseEffects.register("reuse", new IOnUseEffect() {
+            @Override
+            public void activate(EntState ent, int kVal, Eff eff, List<Keyword> keywords, Ent source, Targetable targetable) {
+                if(ent.getEnt() != source) {
+                    ent.recharge();
+                }
+            }
+        });
+        KeywordRegistry.allowedForSpells.register("reuse", true);
+
         KeywordRegistry.registerBasic("break", Colours.grey, "removes " + KUtils.describeN() + " shields", null, KeywordAllowType.UNKIND_TARG);
         KeywordRegistry.registerSelf("selfBreak", new LazyKeyword("break"));
 
@@ -325,6 +357,8 @@ public class Keywords implements basemod.keywords.IKeywordInitializer  {
                 if(total >= ent.getHp()) {
                     ent.addBuff(new Buff(new Overburn(-total)));
 
+
+
                     List<EntState> entList = ent.getSnapshot().getAliveEntStates(ent.isPlayer());
                     for (EntState other : entList) {
                         other.hit((new EffBill()).damage(total).visual(VisualEffectType.Flame).bEff(), (Ent)null);
@@ -353,14 +387,25 @@ public class Keywords implements basemod.keywords.IKeywordInitializer  {
         });
         KeywordRegistry.allowedForSpells.register("overburn", true);
 
+        KeywordRegistry.registerBasic("fuel", Colours.orange, "also adds " + KUtils.describeN() + " fuel", "[orange]Fuel[cu] ([orange]" + Tann.repeat("[hp-square][p]", 3) + "[cu]) has no effect but can be used as a resource", KeywordAllowType.UNKIND_TARG_PIPS);
+        KeywordRegistry.registerSelf("selfFuel", new LazyKeyword("fuel"));
+
+        KeywordRegistry.onUseEffects.register("fuel", new IOnUseEffect() {
+            @Override
+            public void activate(EntState ent, int kVal, Eff eff, List<Keyword> keywords, Ent source, Targetable targetable) {
+                ent.addBuff(new Buff(new Fuel(kVal)));
+            }
+        });
+        KeywordRegistry.allowedForSpells.register("fuel", true);
+
         KeywordColorTagSuffix slayer = new KeywordColorTagSuffix("slayer", Colours.light);
         KeywordColorTagSuffix bane = new KeywordColorTagSuffix("bane", Colours.grey);
         KeywordColorTagSuffix cost = new KeywordColorTagSuffix("cost", Colours.purple);
         KeywordColorTagSuffix limit = new KeywordColorTagSuffix("limit", Colours.grey);
 
-        KeywordRegistry.registerBasic("peridot", Colours.green, "this keyword has no effect but can be used as cost", null, KeywordAllowType.NONBLANK);
-        KeywordRegistry.registerBasic("topaz", Colours.orange, "this keyword has no effect but can be used as cost", null, KeywordAllowType.NONBLANK);
-        KeywordRegistry.registerBasic("zircon", Colours.blue, "this keyword has no effect but can be used as cost", null, KeywordAllowType.NONBLANK);
+        KeywordRegistry.registerBasic("peridot", Colours.green, "this keyword has no effect but can be used as cost", null, KeywordAllowType.YES);
+        KeywordRegistry.registerBasic("topaz", Colours.orange, "this keyword has no effect but can be used as cost", null, KeywordAllowType.YES);
+        KeywordRegistry.registerBasic("zircon", Colours.blue, "this keyword has no effect but can be used as cost", null, KeywordAllowType.YES);
 
         KeywordRegistry.registerBasic("peridotcost", Colours.green, "requires any ally's rolled side to have [green]peridot[cu]", null, KeywordAllowType.NONBLANK);
         KeywordRegistry.registerBasic("topazcost", Colours.orange, "requires any ally's rolled side to have [orange]topaz[cu]", null, KeywordAllowType.NONBLANK);
@@ -433,7 +478,7 @@ public class Keywords implements basemod.keywords.IKeywordInitializer  {
         KeywordRegistry.allowedForSpells.register("hydrabane", true);
         KeywordRegistry.allowedForSpells.register("dragonbane", true);
 
-        KeywordRegistry.registerConditionalRequirement("revenant", Colours.yellow, "x2 if I died last fight", "", new LazyS<>(() -> new GSCConditionalRequirement(new GenericStateCondition(StateConditionType.DiedLasFight), true)));
+        KeywordRegistry.registerConditionalBonus("revenant", Colours.yellow, "x2 if I died last fight", "", new LazyS<>(() -> new ConditionalBonus(new GSCConditionalRequirement(new GenericStateCondition(StateConditionType.DiedLasFight)))), null);
         KeywordRegistry.registerConditionalBonus("bonemancy", Colours.light, KUtils.describePipBonus("bones on the field"), "",  new LazyS<>(() -> new ConditionalBonus(ConditionalBonusType.valueOf("Bones"))),null);
         KeywordRegistry.registerConditionalBonus("necromancy", Colours.purple, KUtils.describePipBonus("hero that died last fight"), "",  new LazyS<>(() -> new ConditionalBonus(ConditionalBonusType.valueOf("Revenants"))),null);
         KeywordRegistry.allowedForSpells.register("bonemancy", true);
@@ -441,10 +486,12 @@ public class Keywords implements basemod.keywords.IKeywordInitializer  {
         KeywordRegistry.registerBasic("poisoncost", Colours.green, "costs " + KUtils.describeN() + " poison", null, KeywordAllowType.PIPS_ONLY);
         KeywordRegistry.registerBasic("hpcost", Colours.red, "costs " + KUtils.describeN() + " hp", null, KeywordAllowType.PIPS_ONLY);
         KeywordRegistry.registerBasic("shieldcost", Colours.grey, "costs " + KUtils.describeN() + " shields", null, KeywordAllowType.PIPS_ONLY);
+        KeywordRegistry.registerBasic("fuelcost", Colours.orange, "costs " + KUtils.describeN() + " fuel", null, KeywordAllowType.PIPS_ONLY);
 
         KeywordRegistry.colorTagRegistry.register("poisoncost", cost);
         KeywordRegistry.colorTagRegistry.register("hpcost", cost);
         KeywordRegistry.colorTagRegistry.register("shieldcost", cost);
+        KeywordRegistry.colorTagRegistry.register("fuelcost", cost);
 
         KeywordRegistry.valueCalculatorRegistry.register("hpcost", new IKeywordValueCalculator() {
             @Override
@@ -463,26 +510,7 @@ public class Keywords implements basemod.keywords.IKeywordInitializer  {
             @Override
             public void activate(int kVal, Eff src, List<Keyword> keywords, Snapshot snapshot, Ent source, int sideIndex) {
                 EntState state = snapshot.getState(source);
-                state.addBuff(new Buff(new Poison(-kVal)));
-                try {
-                    Field buffsField = EntState.class.getDeclaredField("buffs");
-                    buffsField.setAccessible(true);
-                    List<Buff> buffs = (List<Buff>)buffsField.get(state);
-                    for(int i = buffs.size() - 1; i >= 0; --i) {
-                        Buff b = (Buff)buffs.get(i);
-                        if(b.personal instanceof Poison) {
-                            Poison poison = (Poison) b.personal;
-
-                            if(poison.getPoisonDamage() == 0) {
-                                buffs.remove(i);
-                            }
-                        }
-                    }
-                } catch (NoSuchFieldException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
+                BuffUtil.addPoison(state, -kVal);
             }
         });
         KeywordRegistry.keywordUsableRegistry.register("poisoncost", new EntKeywordUsable() {
@@ -532,7 +560,24 @@ public class Keywords implements basemod.keywords.IKeywordInitializer  {
                 return "Not enough shields";
             }
         });
+        KeywordRegistry.onAfterUseEffects.register("fuelcost", new IOnAfterUseEffect() {
+            @Override
+            public void activate(int kVal, Eff src, List<Keyword> keywords, Snapshot snapshot, Ent source, int sideIndex) {
+                EntState state = snapshot.getState(source);
+                BuffUtil.addFuel(state, -kVal);
+            }
+        });
+        KeywordRegistry.keywordUsableRegistry.register("fuelcost", new EntKeywordUsable() {
+            @Override
+            public boolean isUsable(EntState state, Eff first) {
+                return BuffUtil.getFuel(state) >= KUtils.getValue(first);
+            }
 
+            @Override
+            public String getInvalidTargetReason(EntState state, Eff first, boolean allowBadTargets) {
+                return "Not enough fuel";
+            }
+        });
 
         KeywordRegistry.registerEnumMeta("engue", new LazyKeyword("engage"), new LazyKeyword("plague"), KeywordCombineType.ConditionBonus);
         KeywordRegistry.registerEnumMeta("reborigil", new LazyKeyword("reborn"), new LazyKeyword("vigil"), KeywordCombineType.ConditionBonus);
@@ -540,6 +585,10 @@ public class Keywords implements basemod.keywords.IKeywordInitializer  {
 
         KeywordRegistry.registerConditionalBonus("corrosive", Colours.green, KUtils.describePipBonus("poison on target"), "", new LazyS<>(() -> new ConditionalBonus(new PostCalcConditionalRequirement(EnumConditionalRequirement.Always), ConditionalBonusType.TheirPoison, 1)),null);
         KeywordRegistry.allowedForSpells.register("corrosive", true);
+
+        KeywordRegistry.registerConditionalBonus("fueled", Colours.orange, KUtils.describePipBonus("fuel on me"), "", new LazyS<>(() -> new ConditionalBonus(EnumConditionalRequirement.Always, ConditionalBonusType.valueOf("Fuel"), 1)),null);
+        KeywordRegistry.registerConditionalBonus("ignite", Colours.orange, KUtils.describePipBonus("fuel on target"), "", new LazyS<>(() -> new ConditionalBonus(new PostCalcConditionalRequirement(EnumConditionalRequirement.Always), ConditionalBonusType.valueOf("TheirFuel"), 1)),null);
+        KeywordRegistry.allowedForSpells.register("ignite", true);
 
         KeywordRegistry.registerMinus("minusCharged", new LazyKeyword("charged"));
         KeywordRegistry.allowedForSpells.register("minusCharged", true);
